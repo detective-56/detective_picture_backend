@@ -9,6 +9,7 @@ import com.hjl.hjlpicturebackend.service.UserService;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
@@ -21,6 +22,13 @@ public class AuthInterceptor {
 
   @Resource private UserService userService;
 
+  /**
+   * 执行拦截
+   *
+   * @param joinPoint 切入点
+   * @param authCheck 权限校验注解
+   */
+  @Around("@annotation(authCheck)")
   public Object deInterceptor(ProceedingJoinPoint joinPoint, AuthCheck authCheck) throws Throwable {
 
     String mustRole = authCheck.mustRole();
@@ -42,9 +50,10 @@ public class AuthInterceptor {
     }
 
     // 要求必须有管理员权限， 但用户没有管理员权限，拒绝
-    if (UserRoleEnum.ADMIN.equals(mustRoleEnum) && !userRoleEnum.ADMIN.equals(userRoleEnum)) {
+    if (UserRoleEnum.ADMIN.equals(mustRoleEnum) && !UserRoleEnum.ADMIN.equals(userRoleEnum)) {
       throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
     }
+    // 通过校验，放行
     return joinPoint.proceed();
   }
 }

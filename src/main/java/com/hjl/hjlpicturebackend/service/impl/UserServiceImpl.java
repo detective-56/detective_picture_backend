@@ -1,5 +1,7 @@
 package com.hjl.hjlpicturebackend.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -7,11 +9,16 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hjl.hjlpicturebackend.constant.UserConstant;
 import com.hjl.hjlpicturebackend.exception.BusinessException;
 import com.hjl.hjlpicturebackend.exception.ErrorCode;
+import com.hjl.hjlpicturebackend.exception.ThrowUtils;
 import com.hjl.hjlpicturebackend.mapper.UserMapper;
+import com.hjl.hjlpicturebackend.model.dto.user.UserQueryRequest;
 import com.hjl.hjlpicturebackend.model.entity.User;
 import com.hjl.hjlpicturebackend.model.enums.UserRoleEnum;
 import com.hjl.hjlpicturebackend.model.vo.LoginUserVo;
+import com.hjl.hjlpicturebackend.model.vo.UserVo;
 import com.hjl.hjlpicturebackend.service.UserService;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -115,6 +122,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
   }
 
   @Override
+  public List<LoginUserVo> getLoginUserVoList(List<User> userList) {
+    if (CollUtil.isEmpty(userList)) {
+      return new ArrayList<>();
+    }
+    return BeanUtil.copyToList(userList, LoginUserVo.class);
+  }
+
+  @Override
   public Boolean userLogout(HttpServletRequest request) {
     Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
     User currentUser = (User) userObj;
@@ -135,5 +150,45 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     return currentUser;
+  }
+
+  @Override
+  public QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq(ObjUtil.isNotNull(userQueryRequest.getId()), "id", userQueryRequest.getId());
+    queryWrapper.eq(
+        StrUtil.isNotBlank(userQueryRequest.getUserRole()),
+        "userRole",
+        userQueryRequest.getUserRole());
+    queryWrapper.eq(
+        StrUtil.isNotBlank(userQueryRequest.getUserAccount()),
+        "userAccount",
+        userQueryRequest.getUserAccount());
+    queryWrapper.eq(
+        StrUtil.isNotBlank(userQueryRequest.getUserName()),
+        "userName",
+        userQueryRequest.getUserName());
+    queryWrapper.eq(
+        StrUtil.isNotBlank(userQueryRequest.getUserProfile()),
+        "userProfile",
+        userQueryRequest.getUserProfile());
+    queryWrapper.orderBy(
+        StrUtil.isNotBlank(userQueryRequest.getSortOrder()),
+        "ascend".equals(userQueryRequest.getSortOrder()),
+        userQueryRequest.getSortField());
+    return null;
+  }
+
+  @Override
+  public UserVo getUserVo(User user) {
+    ThrowUtils.throwIf(ObjUtil.isNull(user), ErrorCode.PARAMS_ERROR, "用户为空");
+    UserVo userVo = new UserVo();
+    BeanUtils.copyProperties(user, userVo);
+    return userVo;
+  }
+
+  @Override
+  public List<UserVo> getUserVoList(List<User> userList) {
+    return BeanUtil.copyToList(userList, UserVo.class);
   }
 }

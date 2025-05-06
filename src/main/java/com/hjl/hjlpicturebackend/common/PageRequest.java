@@ -3,7 +3,7 @@ package com.hjl.hjlpicturebackend.common;
 import lombok.Data;
 
 @Data
-public class PageResult {
+public class PageRequest {
 
   /** 当前页号 */
   private int current = 1;

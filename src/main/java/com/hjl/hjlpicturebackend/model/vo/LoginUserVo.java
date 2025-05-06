@@ -1,13 +1,12 @@
 package com.hjl.hjlpicturebackend.model.vo;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
 
 @Data
-@ApiModel(value = "用户Vo对象", description = "用户Vo对象")
+// @ApiModel(value = "登录用户Vo对象", description = "登录用户Vo对象")
 public class LoginUserVo implements Serializable {
 
   private static final long serialVersionUID = 1L;

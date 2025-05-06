@@ -7,7 +7,7 @@ spring:
     name: hjl-picture-backend
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/hjl_picture
+    url: jdbc:mysql://localhost:3306/hjl_picture?serverTimezone=Asia/Shanghai
     username: root
     password: root
 

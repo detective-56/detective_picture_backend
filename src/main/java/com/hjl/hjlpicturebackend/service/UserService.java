@@ -10,7 +10,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author DELL
+ * @author Hao jinglian
  * @description 针对表【user(用户)】的数据库操作Service
  * @createDate 2025-05-06 10:32:42
  */

@@ -44,4 +44,7 @@ public interface UserService extends IService<User> {
   UserVo getUserVo(User user);
 
   List<UserVo> getUserVoList(List<User> userList);
+
+  /** 判断用户是否是管理员 */
+  Boolean isAdmin(User user);
 }

@@ -48,7 +48,7 @@ public class FileManager {
       file = File.createTempFile(uploadPath, null);
       multipartFile.transferTo(file);
       // 上传图片
-      PutObjectResult putObjectResult = cosManager.putObject(uploadPath, file);
+      PutObjectResult putObjectResult = cosManager.putPictureObject(uploadPath, file);
 
       ImageInfo imageInfo = putObjectResult.getCiUploadResult().getOriginalInfo().getImageInfo();
       // 封装返回结果
@@ -56,7 +56,7 @@ public class FileManager {
       int picWith = imageInfo.getWidth();
       int picHeight = imageInfo.getHeight();
       double picScale = NumberUtil.round(picWith * 1.0 / picHeight, 2).doubleValue();
-      uploadPictureResult.setPicFormat(FileUtil.mainName(originalFilename));
+      uploadPictureResult.setPicName(FileUtil.mainName(originalFilename));
       uploadPictureResult.setPicWidth(imageInfo.getWidth());
       uploadPictureResult.setPicHeight(imageInfo.getHeight());
       uploadPictureResult.setPicScale(picScale);

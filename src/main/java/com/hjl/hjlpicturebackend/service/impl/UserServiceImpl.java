@@ -191,4 +191,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
   public List<UserVo> getUserVoList(List<User> userList) {
     return BeanUtil.copyToList(userList, UserVo.class);
   }
+
+  @Override
+  public Boolean isAdmin(User user) {
+    return user != null && UserRoleEnum.ADMIN.getValue().equals(user.getUserRole());
+  }
 }

@@ -4,12 +4,16 @@ import com.hjl.hjlpicturebackend.config.CosClientConfig;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.COSObject;
 import com.qcloud.cos.model.GetObjectRequest;
+import com.qcloud.cos.model.ObjectMetadata;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.model.ciModel.persistence.PicOperations;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author hao jinglian
@@ -47,6 +51,7 @@ public class CosManager {
     return cosClient.getObject(getObjectRequest);
   }
 
+  /** 上传对象并返回信息 */
   public PutObjectResult putPictureObject(String key, File file) {
     PutObjectRequest putObjectRequest =
         new PutObjectRequest(cosClientConfig.getBucket(), key, file);
@@ -57,5 +62,25 @@ public class CosManager {
     // 构造处理参数
     putObjectRequest.setPicOperations(picOperations);
     return cosClient.putObject(putObjectRequest);
+  }
+
+  /** 以流的形式上传并返回信息 */
+  public PutObjectResult putPictureObject(MultipartFile multipartFile, String key) {
+    try (InputStream inputStream = multipartFile.getInputStream()) {
+      // 元信息配置
+      ObjectMetadata metadata = new ObjectMetadata();
+      metadata.setContentLength(multipartFile.getSize());
+      metadata.setContentType(multipartFile.getContentType());
+      // 创建上传请求
+      PutObjectRequest putObjectRequest =
+          new PutObjectRequest(cosClientConfig.getBucket(), key, inputStream, metadata);
+      // 设置返回图像信息
+      PicOperations picOperations = new PicOperations();
+      picOperations.setIsPicInfo(1);
+      putObjectRequest.setPicOperations(picOperations);
+      return cosClient.putObject(putObjectRequest);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

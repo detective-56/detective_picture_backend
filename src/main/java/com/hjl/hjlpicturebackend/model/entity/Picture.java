@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
@@ -33,6 +34,7 @@ public class Picture implements Serializable {
   private String category;
 
   /** 标签（JSON 数组） */
+  @TableField(typeHandler = JacksonTypeHandler.class)
   private String tags;
 
   /** 图片体积 */

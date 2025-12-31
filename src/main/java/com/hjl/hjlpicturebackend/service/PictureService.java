@@ -26,7 +26,7 @@ public interface PictureService extends IService<Picture> {
   QueryWrapper<Picture> getQueryWrapper(PictureQueryRequest pictureQueryRequest);
 
   /** 获取单个图片的封装 */
-  public PictureVo getPictureVo(Picture picture, HttpServletRequest request);
+  PictureVo getPictureVo(Picture picture, HttpServletRequest request);
 
   /** 分页获取图片 */
   Page<PictureVo> getPictureVoPage(Page<Picture> picturePage, HttpServletRequest request);

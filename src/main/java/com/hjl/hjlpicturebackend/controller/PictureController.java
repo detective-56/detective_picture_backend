@@ -21,10 +21,8 @@ import com.hjl.hjlpicturebackend.model.entity.User;
 import com.hjl.hjlpicturebackend.model.vo.PictureVo;
 import com.hjl.hjlpicturebackend.service.PictureService;
 import com.hjl.hjlpicturebackend.service.UserService;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
@@ -44,6 +42,13 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("picture")
 public class PictureController {
+
+  public static void main(String[] args){
+    List<String> tags = new ArrayList<>();
+    tags.add("高清");
+    tags.add("楼道");
+    System.out.println("tags = " + JSONUtil.toJsonStr(tags));
+  }
 
   @Resource private UserService userService;
 
@@ -83,7 +88,7 @@ public class PictureController {
   }
 
   @PostMapping("/list/page/vo")
-  public BaseResponse<Page<PictureVo>> listPictureByPageVo(
+  public BaseResponse<Page<PictureVo>> listPictureVoByPage(
       @RequestBody PictureQueryRequest request, HttpServletRequest req) {
 
     int current = request.getCurrent();

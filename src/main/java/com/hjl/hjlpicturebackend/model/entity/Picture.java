@@ -34,7 +34,7 @@ public class Picture implements Serializable {
   private String category;
 
   /** 标签（JSON 数组） */
-  @TableField(typeHandler = JacksonTypeHandler.class)
+//  @TableField(typeHandler = JacksonTypeHandler.class)
   private String tags;
 
   /** 图片体积 */

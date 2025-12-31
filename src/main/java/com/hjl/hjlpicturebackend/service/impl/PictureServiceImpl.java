@@ -109,10 +109,10 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
     }
     if (CollUtil.isNotEmpty(tags)) {
       for (String tag : tags) {
-        queryWrapper.like("tags", "\"" + tag + "\"");
+        queryWrapper.like("tags", tag);
       }
     }
-    queryWrapper.orderBy(StrUtil.isNotEmpty(sortField), sortField.equals("ascend"), sortOrder);
+    queryWrapper.orderBy(StrUtil.isNotEmpty(sortField), sortOrder.equals("ascend"), sortField);
 
     return queryWrapper;
   }
@@ -169,10 +169,10 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
     String url = picture.getUrl();
     String introduction = picture.getIntroduction();
     ThrowUtils.throwIf(ObjUtil.isNull(id), ErrorCode.PARAMS_ERROR, "id不能为空");
-    if (StrUtil.isBlank(url)) {
+    if (StrUtil.isNotBlank(url)) {
       ThrowUtils.throwIf(url.length() > 1024, ErrorCode.PARAMS_ERROR, "url 过长");
     }
-    if (StrUtil.isBlank(introduction)) {
+    if (StrUtil.isNotBlank(introduction)) {
       ThrowUtils.throwIf(introduction.length() > 800, ErrorCode.PARAMS_ERROR, "简介过长");
     }
   }

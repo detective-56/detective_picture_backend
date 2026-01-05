@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
@@ -34,7 +33,7 @@ public class Picture implements Serializable {
   private String category;
 
   /** 标签（JSON 数组） */
-//  @TableField(typeHandler = JacksonTypeHandler.class)
+  //  @TableField(typeHandler = JacksonTypeHandler.class)
   private String tags;
 
   /** 图片体积 */
@@ -66,4 +65,16 @@ public class Picture implements Serializable {
 
   /** 是否删除 */
   private Integer isDelete;
+
+  /** 状态：0=待审核; 1=通过; 2=拒绝 */
+  private Integer reviewStatus;
+
+  /** 审核信息 */
+  private String reviewMessage;
+
+  /** 审核人 id */
+  private Long reviewerId;
+
+  /** 审核时间 */
+  private Date reviewTime;
 }

@@ -11,17 +11,13 @@ import com.hjl.hjlpicturebackend.constant.UserConstant;
 import com.hjl.hjlpicturebackend.exception.BusinessException;
 import com.hjl.hjlpicturebackend.exception.ErrorCode;
 import com.hjl.hjlpicturebackend.exception.ThrowUtils;
-import com.hjl.hjlpicturebackend.model.dto.picture.PictureEditRequest;
-import com.hjl.hjlpicturebackend.model.dto.picture.PictureQueryRequest;
-import com.hjl.hjlpicturebackend.model.dto.picture.PictureTagCategory;
-import com.hjl.hjlpicturebackend.model.dto.picture.PictureUpdateRequest;
-import com.hjl.hjlpicturebackend.model.dto.picture.PictureUploadRequest;
+import com.hjl.hjlpicturebackend.model.dto.picture.*;
 import com.hjl.hjlpicturebackend.model.entity.Picture;
 import com.hjl.hjlpicturebackend.model.entity.User;
+import com.hjl.hjlpicturebackend.model.enums.PictureReviewStatusEnum;
 import com.hjl.hjlpicturebackend.model.vo.PictureVo;
 import com.hjl.hjlpicturebackend.service.PictureService;
 import com.hjl.hjlpicturebackend.service.UserService;
-
 import java.util.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -43,19 +39,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("picture")
 public class PictureController {
 
-  public static void main(String[] args){
-    List<String> tags = new ArrayList<>();
-    tags.add("高清");
-    tags.add("楼道");
-    System.out.println("tags = " + JSONUtil.toJsonStr(tags));
-  }
-
   @Resource private UserService userService;
-
   @Resource private PictureService pictureService;
 
   @PostMapping("/upload")
-  @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
   public BaseResponse<PictureVo> upload(
       @RequestPart("file") MultipartFile file,
       PictureUploadRequest pictureUploadRequest,
@@ -95,6 +82,8 @@ public class PictureController {
     int pageSize = request.getPageSize();
     // 限制爬虫
     ThrowUtils.throwIf(pageSize > 20, ErrorCode.PARAMS_ERROR);
+    // 普通用户默认只能查看已过审的数据
+    request.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
     // 查询数据库
     Page<Picture> picturePage =
         pictureService.page(new Page<>(current, pageSize), pictureService.getQueryWrapper(request));
@@ -115,8 +104,8 @@ public class PictureController {
 
   /** 更新图片 */
   @PostMapping("/update")
-  @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-  public BaseResponse<Boolean> updatePicture(@RequestBody PictureUpdateRequest updateRequest) {
+  public BaseResponse<Boolean> updatePicture(
+      @RequestBody PictureUpdateRequest updateRequest, HttpServletRequest request) {
     if (Objects.isNull(updateRequest) || updateRequest.getId() <= 0) {
       throw new BusinessException(ErrorCode.PARAMS_ERROR);
     }
@@ -132,6 +121,9 @@ public class PictureController {
     Long id = updateRequest.getId();
     Picture oldPicture = pictureService.getById(id);
     ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR);
+    // 补充审核参数
+    User loginUser = userService.getLoginUser(request);
+    pictureService.fillReviewParams(picture, loginUser);
     // 更新
     boolean result = pictureService.updateById(picture);
     ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
@@ -182,6 +174,8 @@ public class PictureController {
     Picture picture = BeanUtil.toBean(editRequest, Picture.class);
     picture.setTags(JSONUtil.toJsonStr(picture.getTags()));
     picture.setEditTime(new Date());
+    // 补充审核参数
+    pictureService.fillReviewParams(picture, loginUser);
     // 校验图片
     pictureService.validPicture(picture);
 
@@ -198,5 +192,15 @@ public class PictureController {
     pictureTagCategory.setTagList(tagList);
     pictureTagCategory.setCategoryList(categoryList);
     return ResultUtils.success(pictureTagCategory);
+  }
+
+  @PostMapping("/review")
+  @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+  public BaseResponse<Boolean> doPictureReview(
+      @RequestBody PictureReviewRequest pictureReviewRequest, HttpServletRequest request) {
+    ThrowUtils.throwIf(pictureReviewRequest == null, ErrorCode.PARAMS_ERROR);
+    User loginUser = userService.getLoginUser(request);
+    pictureService.doPictureReview(pictureReviewRequest, loginUser);
+    return ResultUtils.success(true);
   }
 }

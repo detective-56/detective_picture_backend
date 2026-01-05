@@ -16,6 +16,8 @@ import org.springframework.beans.BeanUtils;
 @Data
 public class PictureVo implements Serializable {
 
+  private static final long serialVersionUID = 1L;
+
   /** id */
   private Long id;
 
@@ -63,8 +65,6 @@ public class PictureVo implements Serializable {
 
   /** 创建用户信息 */
   private UserVo user;
-
-  private static final long serialVersionUID = 1L;
 
   /** 封装类转对象 */
   public static Picture voToObj(PictureVo pictureVo) {

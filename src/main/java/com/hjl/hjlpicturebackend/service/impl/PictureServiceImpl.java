@@ -47,6 +47,10 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
 
   @Resource private UserService userService;
 
+  @Resource private FilePictureUpload filePictureUpload;
+
+  @Resource private UrlPictureUpload urlPictureUpload;
+
   @Override
   public PictureVo uploadPicture(
       MultipartFile file, PictureUploadRequest pictureUploadRequest, User loginUser) {

@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author hao jinglian
  * @description 文件上传服务
  * @createDate 2025/6/23
+ * @deprecated 已废弃，改为用 upload 包的模板方法优化
  */
 @Service
 @Slf4j
